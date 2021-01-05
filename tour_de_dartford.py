@@ -17,7 +17,9 @@ import sqlite3
 import datetime
 import schedule
 import time
+from git import Repo
 
+repo_path = r'tdd/.git'
 club = "48449"
 
 
@@ -27,6 +29,55 @@ def seconds_to_time(seconds):
     minutes = int(seconds / 60)
     seconds %= 60
     return hours, minutes, seconds
+
+
+def git_push(commit_message):
+    repo = Repo(repo_path)
+    repo.git.add(all=True)
+    repo.index.commit(commit_message)
+    origin = repo.remote(name='origin')
+    origin.push()
+
+
+def create_webpage():
+
+    db = sqlite3.connect('leaderboard.db')
+    c = db.cursor()
+
+    leaderboard = c.execute('SELECT athletes.athlete_id, firstname, lastname, SUM(ride_time), SUM(run_time), '
+                            'SUM(swim_time), SUM(total_time) FROM athletes INNER JOIN daily_totals ON '
+                            'athletes.athlete_id=daily_totals.athlete_id GROUP BY athletes.athlete_id ORDER BY SUM('
+                            'total_time) DESC')
+
+    table = '<table>\n'
+    table += '    <tr>\n'
+    table += '        <th>Athlete</th>\n'
+    table += '        <th>Ride Time</th>\n'
+    table += '        <th>Run Time</th>\n'
+    table += '        <th>Swim Time</th>\n'
+    table += '        <th>Total Time</th>\n'
+    table += '    </tr>\n'
+
+    for athlete in leaderboard:
+        table += '    <tr>\n'
+        table += '        <td>' + athlete[1] + ' ' + athlete[2] + '</th>\n'
+        table += '        <td>' + str(athlete[3]) + '</td>\n'
+        table += '        <td>' + str(athlete[4]) + '</td>\n'
+        table += '        <td>' + str(athlete[5]) + '</td>\n'
+        table += '        <td>' + str(athlete[6]) + '</td>\n'
+        table += '    </tr>\n'
+
+    table += '</table>'
+
+    db.close()
+
+    f = open('tdd/index.html', 'wt')
+
+    f.write(table)
+
+    f.close()
+
+    git_push('Stats update: ' + str(datetime.date.today()))
 
 
 def fetch_leaderboard():
@@ -116,6 +167,7 @@ def main():
     db.close()
 
     schedule.every().day.at("23:55").do(fetch_leaderboard)
+    schedule.every().day.at("23:56").do(create_webpage)
 
     while True:
         schedule.run_pending()
