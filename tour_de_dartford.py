@@ -43,6 +43,12 @@ def fetch_leaderboard():
 
         for athlete in leaderboard['data']:
 
+            c.execute('INSERT OR IGNORE INTO athletes VALUES (?,?,?,?,?)', (athlete['athlete_id'],
+                                                                            athlete['athlete_firstname'],
+                                                                            athlete['athlete_lastname'],
+                                                                            0,
+                                                                            0))
+
             mondays_date = datetime.date.today() - datetime.timedelta(days=datetime.date.today().weekday())
 
             ride_time_total = c.execute('SELECT SUM(ride_time) FROM daily_totals WHERE athlete_id=? AND date>=?',
@@ -92,6 +98,13 @@ def main():
 
     db = sqlite3.connect('leaderboard.db')
     c = db.cursor()
+    c.execute('CREATE TABLE IF NOT EXISTS athletes ('
+              'athlete_id NUMERIC, '
+              'firstname TEXT, '
+              'lastname TEXT, '
+              'eliminated NUMERIC, '
+              'opt_out NUMERIC,'
+              'UNIQUE(athlete_id))')
     c.execute('CREATE TABLE IF NOT EXISTS daily_totals ('
               'athlete_id NUMERIC, '
               'date TEXT, '
