@@ -51,6 +51,7 @@ def create_webpage():
 
     table = '<table>\n'
     table += '    <tr>\n'
+    table += '        <th>Rank</th>\n'
     table += '        <th>Athlete</th>\n'
     table += '        <th>Ride Time</th>\n'
     table += '        <th>Run Time</th>\n'
@@ -58,14 +59,20 @@ def create_webpage():
     table += '        <th>Total Time</th>\n'
     table += '    </tr>\n'
 
+    rank = 1
+
     for athlete in leaderboard:
+
         table += '    <tr>\n'
+        table += '        <td>' + str(rank) + '</td>\n'
         table += '        <td>' + athlete[1] + ' ' + athlete[2] + '</th>\n'
         table += '        <td>' + str(datetime.timedelta(seconds=athlete[3])) + '</td>\n'
         table += '        <td>' + str(datetime.timedelta(seconds=athlete[4])) + '</td>\n'
         table += '        <td>' + str(datetime.timedelta(seconds=athlete[5])) + '</td>\n'
         table += '        <td>' + str(datetime.timedelta(seconds=athlete[6])) + '</td>\n'
         table += '    </tr>\n'
+
+        rank += 1
 
     table += '</table>'
 
