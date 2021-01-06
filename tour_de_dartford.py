@@ -39,7 +39,7 @@ def git_push(commit_message):
     origin.push()
 
 
-def create_webpage():
+def create_table():
 
     db = sqlite3.connect('leaderboard.db')
     c = db.cursor()
@@ -78,7 +78,7 @@ def create_webpage():
 
     db.close()
 
-    f = open('tdd/index.html', 'wt')
+    f = open('tdd/table.html', 'wt')
 
     f.write(table)
 
@@ -174,7 +174,7 @@ def main():
     db.close()
 
     schedule.every().day.at("23:55").do(fetch_leaderboard)
-    schedule.every().day.at("23:56").do(create_webpage)
+    schedule.every().day.at("23:56").do(create_table)
 
     while True:
         schedule.run_pending()
