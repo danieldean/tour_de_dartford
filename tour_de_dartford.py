@@ -61,10 +61,10 @@ def create_webpage():
     for athlete in leaderboard:
         table += '    <tr>\n'
         table += '        <td>' + athlete[1] + ' ' + athlete[2] + '</th>\n'
-        table += '        <td>' + str(athlete[3]) + '</td>\n'
-        table += '        <td>' + str(athlete[4]) + '</td>\n'
-        table += '        <td>' + str(athlete[5]) + '</td>\n'
-        table += '        <td>' + str(athlete[6]) + '</td>\n'
+        table += '        <td>' + str(datetime.timedelta(seconds=athlete[3])) + '</td>\n'
+        table += '        <td>' + str(datetime.timedelta(seconds=athlete[4])) + '</td>\n'
+        table += '        <td>' + str(datetime.timedelta(seconds=athlete[5])) + '</td>\n'
+        table += '        <td>' + str(datetime.timedelta(seconds=athlete[6])) + '</td>\n'
         table += '    </tr>\n'
 
     table += '</table>'
