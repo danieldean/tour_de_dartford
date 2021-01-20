@@ -23,14 +23,6 @@ repo_path = r'tdd/.git'
 club = "48449"
 
 
-def seconds_to_time(seconds):
-    hours = int(seconds / 3600)
-    seconds %= 3600
-    minutes = int(seconds / 60)
-    seconds %= 60
-    return hours, minutes, seconds
-
-
 def git_push(commit_message):
     repo = Repo(repo_path)
     repo.git.add(all=True)
