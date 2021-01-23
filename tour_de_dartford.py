@@ -38,39 +38,45 @@ def create_table():
 
     leaderboard = c.execute('SELECT athletes.athlete_id, firstname, lastname, SUM(ride_time), SUM(run_time), '
                             'SUM(swim_time), SUM(total_time) FROM athletes INNER JOIN daily_totals ON '
-                            'athletes.athlete_id=daily_totals.athlete_id GROUP BY athletes.athlete_id ORDER BY SUM('
-                            'total_time) DESC')
+                            'athletes.athlete_id=daily_totals.athlete_id WHERE strftime("%m", date)=? GROUP BY '
+                            'athletes.athlete_id ORDER BY SUM(total_time) DESC',
+                            (datetime.date.today().strftime('%m'), ))
 
-    table = '<table>\n'
-    table += '    <tr>\n'
-    table += '        <th>Rank</th>\n'
-    table += '        <th>Athlete</th>\n'
-    table += '        <th>Ride Time</th>\n'
-    table += '        <th>Run Time</th>\n'
-    table += '        <th>Swim Time</th>\n'
-    table += '        <th>Total Time</th>\n'
-    table += '    </tr>\n'
+    table = '<div class="first">' + datetime.date.today().strftime('%B') + '</div>\n'
+    table += '<table>\n'
+    table += '    <thead>\n'
+    table += '        <tr class="second">\n'
+    table += '            <th>Rank</th>\n'
+    table += '            <th>Athlete</th>\n'
+    table += '            <th>Ride Time</th>\n'
+    table += '            <th>Run Time</th>\n'
+    table += '            <th>Swim Time</th>\n'
+    table += '            <th>Total Time</th>\n'
+    table += '        </tr>\n'
+    table += '    </thead>\n'
+    table += '    <tbody>\n'
 
     rank = 1
 
     for athlete in leaderboard:
 
-        table += '    <tr>\n'
-        table += '        <td>' + str(rank) + '</td>\n'
-        table += '        <td>' + athlete[1] + ' ' + athlete[2] + '</th>\n'
-        table += '        <td>' + str(datetime.timedelta(seconds=athlete[3])) + '</td>\n'
-        table += '        <td>' + str(datetime.timedelta(seconds=athlete[4])) + '</td>\n'
-        table += '        <td>' + str(datetime.timedelta(seconds=athlete[5])) + '</td>\n'
-        table += '        <td>' + str(datetime.timedelta(seconds=athlete[6])) + '</td>\n'
-        table += '    </tr>\n'
+        table += '        <tr>\n'
+        table += '            <td>' + str(rank) + '</td>\n'
+        table += '            <td>' + athlete[1] + ' ' + athlete[2] + '</td>\n'
+        table += '            <td>' + str(datetime.timedelta(seconds=athlete[3])) + '</td>\n'
+        table += '            <td>' + str(datetime.timedelta(seconds=athlete[4])) + '</td>\n'
+        table += '            <td>' + str(datetime.timedelta(seconds=athlete[5])) + '</td>\n'
+        table += '            <td>' + str(datetime.timedelta(seconds=athlete[6])) + '</td>\n'
+        table += '        </tr>\n'
 
         rank += 1
 
+    table += '    </tbody>\n'
     table += '</table>'
 
     db.close()
 
-    f = open('tdd/table.html', 'wt')
+    f = open('tdd/table-' + datetime.date.today().strftime('%b').lower() + '.html', 'wt')
 
     f.write(table)
 
