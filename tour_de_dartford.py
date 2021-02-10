@@ -78,7 +78,7 @@ def create_table():
 
     db.close()
 
-    f = open('tdd/table-' + datetime.date.today().strftime('%b').lower() + '.html', 'wt')
+    f = open(dirname + '/tdd/table-' + datetime.date.today().strftime('%b').lower() + '.html', 'wt')
 
     f.write(table)
 
