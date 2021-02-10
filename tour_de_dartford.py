@@ -15,11 +15,15 @@ import requests
 import json
 import sqlite3
 import datetime
-import schedule
-import time
 from git import Repo
+import os
 
-repo_path = r'tdd/.git'
+# Use paths relative to the script.
+dirname = os.path.dirname(__file__)
+if dirname:
+    dirname += '/'
+
+repo_path = dirname + 'tdd/.git'
 club = "48449"
 
 
@@ -33,7 +37,7 @@ def git_push(commit_message):
 
 def create_table():
 
-    db = sqlite3.connect('leaderboard.db')
+    db = sqlite3.connect(dirname + 'leaderboard.db')
     c = db.cursor()
 
     leaderboard = c.execute('SELECT athletes.athlete_id, firstname, lastname, SUM(ride_time), SUM(run_time), '
@@ -76,7 +80,7 @@ def create_table():
 
     db.close()
 
-    f = open('tdd/table-' + datetime.date.today().strftime('%b').lower() + '.html', 'wt')
+    f = open(dirname + 'tdd/table-' + datetime.date.today().strftime('%b').lower() + '.html', 'wt')
 
     f.write(table)
 
@@ -87,7 +91,7 @@ def create_table():
 
 def fetch_leaderboard():
 
-    db = sqlite3.connect('leaderboard.db')
+    db = sqlite3.connect(dirname + 'leaderboard.db')
     c = db.cursor()
 
     r = requests.get('https://www.strava.com/clubs/' + club + "/leaderboard",
@@ -152,7 +156,7 @@ def fetch_leaderboard():
 
 def main():
 
-    db = sqlite3.connect('leaderboard.db')
+    db = sqlite3.connect(dirname + 'leaderboard.db')
     c = db.cursor()
     c.execute('CREATE TABLE IF NOT EXISTS athletes ('
               'athlete_id NUMERIC, '
@@ -171,12 +175,8 @@ def main():
     db.commit()
     db.close()
 
-    schedule.every().day.at("23:55").do(fetch_leaderboard)
-    schedule.every().day.at("23:56").do(create_table)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    fetch_leaderboard()
+    create_table()
 
 
 if __name__ == '__main__':
