@@ -17,6 +17,7 @@ import sqlite3
 import datetime
 from git import Repo
 import os
+import time
 
 # Use paths relative to the script.
 dirname = os.path.dirname(__file__)
@@ -147,11 +148,12 @@ def fetch_leaderboard():
                                                                         total_time))
 
         db.commit()
+        db.close()
+        return True
 
     else:
         print(str(r.status_code) + " occurred whilst whilst making the request.")
-
-    db.close()
+        return False
 
 
 def main():
@@ -175,7 +177,9 @@ def main():
     db.commit()
     db.close()
 
-    fetch_leaderboard()
+    while not fetch_leaderboard():
+        time.sleep(5)
+
     create_table()
 
 
